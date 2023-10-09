@@ -1,0 +1,82 @@
+﻿
+@{
+    ViewBag.Title = "ReporteMatriculados";
+}
+
+
+<header>
+    <center>
+        <h2>Reporte de Matriculados</h2>
+    </center>
+</header>
+<body>
+    <div class="container">
+        <br />
+        <br />
+        <div class="row">
+            <table id="tableReporte" class="table table-striped table-dark">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID MATRICULA</th>
+                        <th>CODIGO ALUMNO</th>
+                        <th>NOMBRES</th>
+                        <th>APELLIDOS</th>
+                        <th>ID CURSO</th>
+                        <th>DESCRIPCION DE CURSO</th>
+                        <th>CREDITOS</th>
+                        <th>NOMBRE SECCION</th>
+                        <th>TIPO MATRICULA</th>
+                        <th>FECHA MATRICULA</th>
+                        <th>FECHA ANULACION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+@section scripts{
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            listarReporte();
+        });
+
+        function listarReporte() {
+
+            var tableReporte = $("#tableReporte");
+
+            jQuery.ajax({
+            url: '@Url.Action("ReporteMatricula", "Matricula")',
+            type: "POST",
+            data: null,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $.each(data.data, function (index, item) {
+                        tableReporte.append(
+                            "<tr><td>" +  item.ID_MATRICULA +
+                            "</td><td>" + item.ID_ALUMNO +
+                            "</td><td>" + item.NOMBRES +
+                            "</td><td>" + item.APELLIDOS +
+                            "</td><td>" + item.ID_CURSO +
+                            "</td><td>" + item.NOMBRE_CURSO +
+                            "</td><td>" + item.CREDITOS +
+                            "</td><td>" + item.NOMBRE_SECCION +
+                            "</td><td>" + item.TIPO_MATRICULA +
+                            "</td><td>" + item.FECHA_MATRICULA +
+                            "</td><td>" + item.FECHA_ANULACION +
+                            "</td></tr>");
+                });
+            },
+            error: function (error) {
+                console.log(error)
+            }
+            });
+        }
+
+    </script>
+}

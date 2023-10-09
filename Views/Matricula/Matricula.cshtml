@@ -1,0 +1,296 @@
+﻿
+@{
+    ViewBag.Title = "Matricula";
+}
+
+
+<header>
+    <center>
+        <h2>Matricula</h2>
+    </center>
+</header>
+<body>
+    <div class="container">
+        <br />
+        <br />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-2">
+                        <label class="form-label" style="margin-top:10px;">Documento:</label>
+                    </div>
+                    <div class="col-sm-3">
+                        <input type="text" class="form-control" placeholder="Ingrese DNI" id="txtDocumento">
+                    </div>
+                    <div class="col-sm-2">
+                        <button id="btnBuscar" type="button" onclick="BuscaAlumno();" class="btn btn-primary">Buscar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-3">
+                        <label class="form-label" style="margin-top:10px;">Nombres del Estudiante:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="txtNombres">
+                    </div>
+                </div>
+                <input type="hidden" id="hdnDni" />
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-3">
+                        <label class="form-label" style="margin-top:10px;">Apellidos del Estudiante:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="text" class="form-control" id="txtApellidos">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-3">
+                        <label class="form-label" style="margin-top:10px;">Fecha de matricula:</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="date" class="form-control" id="txtFecha">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-3">
+                        <label class="form-label" style="margin-top:10px;">Curso:</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select id="cboCurso" onchange="listaSecciones()" class="form-select">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-3">
+                        <label class="form-label" style="margin-top:10px;">Seccion:</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select id="cboSeccion" class="form-select">
+                            <option value="0">Seleccione</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-3">
+                        <label class="form-label" style="margin-top:10px;">Tipo de Matricula:</label>
+                    </div>
+                    <div class="col-sm-6">
+                        <select id="cboTipomatricula" class="form-select">
+                            <option value="0">Seleccione</option>
+                            <option value="PRESENCIAL">PRESENCIAL</option>
+                            <option value="VIRTUAL">VIRTUAL</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <div class="col-sm-3">
+                        <button type="button" id="btnMatricula" onclick="RegistrarMatricula()" class="btn btn-success">Registrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <br />
+        <br />
+        <div class="row">
+            <h2>
+                Lista de Vacantes Disponibles
+            </h2>
+        </div>
+        <br />
+        <div class="row">
+            <table id="tableVacante" class="table table-striped table-dark">
+                <thead class="thead-dark">
+                    <tr>                        
+                        <th>Curso</th>
+                        <th>Créditos</th>
+                        <th>Sección</th>
+                        <th>Vacantes Disponibles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="row">
+            <button type="button" class="btn btn-primary" onclick="window.location.href = '@Url.Action("ReporteMatriculados", "Matricula")'" >Ver reporte de Matriculados</button>
+        </div>
+    </div>
+
+</body>
+@section scripts{
+    <script src="~/Scripts/jquery-ui.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            //mostrar cursos activos
+            listaCursos();
+            //cargar lista de vacantes, segun el curso y seccion disponibles
+            listaVacantes();
+
+
+        });
+
+        function listaCursos() {
+
+            var cboCurso = $("#cboCurso");
+
+            jQuery.ajax({
+                url: '@Url.Action("ListadoCurso", "Curso")',
+                type: "GET",
+                data: null,
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    cboCurso.empty().append('<option value="0">Seleccione</option>');
+                    $.each(data.data, function (index, item) {
+                        cboCurso.append($("<option></option>").val(item.ID_CURSO).html(item.NOMBRE_CURSO));
+
+                    });
+                },
+                error: function (error) {
+                    console.log(error)
+                }
+            });
+        }
+
+        function listaVacantes() {
+
+            var tableVacante = $("#tableVacante");
+
+            jQuery.ajax({
+            url: '@Url.Action("ListadoVacantes", "Vacante")',
+            type: "POST",
+            data: null,
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    console.log(data);
+                    $.each(data.data, function (index, item) {
+                        tableVacante.append("<tr><td>" + item.NOMBRE_CURSO + "</td><td>" + item.CREDITOS + "</td><td>" + item.NOMBRE_SECCION + "</td><td>" + item.VACANTES_DISPONIBLES + "</td></tr>");
+                });
+            },
+            error: function (error) {
+                console.log(error)
+            }
+            });
+         }
+
+        //mostrar secciones activas
+        function listaSecciones() {
+
+            $("#cboCurso").on("click", function () {
+                console.log("1");
+                var cboCurso = $("#cboCurso").val();
+                var cboSeccion = $("#cboSeccion");
+                jQuery.ajax({
+                    url: '@Url.Action("ListadoSeccion", "Seccion")',
+                    type: "POST",
+                    data: JSON.stringify({ cboCurso: cboCurso }),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        cboSeccion.empty().append('<option value="0">Seleccione</option>');
+                        $.each(data.data, function (index, item) {
+                            cboSeccion.append($("<option></option>").val(item.ID_SECCION).html(item.NOMBRE));
+
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error)
+                    }
+                });
+            });
+
+        }
+
+        //buscar alumno
+        function BuscaAlumno() {
+
+            var dni = $("#txtDocumento").val();
+
+            jQuery.ajax({
+            url: '@Url.Action("BuscarAlumno", "Alumno")',
+            type: "POST",
+            data: JSON.stringify({ dni: dni}),
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $("#txtNombres").val(data.NOMBRES);
+                    $("#txtApellidos").val(data.APELLIDOS);
+                    $("#hdnDni").val(data.ID_ALUMNO);
+            }
+            })
+        }
+        //registrar matricula de alumno
+        function RegistrarMatricula() {
+            var tableVacante = $("#tableVacante");
+            //$("#btnMatricula").on("click", function () {
+            //
+            //});
+
+            var ID_ALUMNO = $("#hdnDni").val();
+                var ID_CURSO = $("#cboCurso").val();
+                var ID_SECCION = $("#cboSeccion").val();
+                var TIPO_MATRICULA = $("#cboTipomatricula").val();
+                var FECHA_MATRICULA = $("#txtFecha").val();
+
+                jQuery.ajax({
+                    url: '@Url.Action("RegistrarMatricula", "Matricula")',
+                    type: "POST",
+                    data: JSON.stringify({
+                        ID_ALUMNO: ID_ALUMNO,
+                        ID_CURSO: ID_CURSO,
+                        ID_SECCION: ID_SECCION,
+                        TIPO_MATRICULA: TIPO_MATRICULA,
+                        FECHA_MATRICULA: FECHA_MATRICULA
+                    }),
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        alert("SE REGISTRO MATRICULA");
+                        $("#tableVacante > TBODY").empty();
+                        listaVacantes();
+                    }
+                })
+        }
+
+
+    </script>
+}
+
