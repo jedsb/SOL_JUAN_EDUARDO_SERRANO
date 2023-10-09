@@ -191,6 +191,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="ScriptsBD\" />
     <Folder Include="Views\Alumno\" />
     <Folder Include="Views\Curso\" />
     <Folder Include="Views\Seccion\" />
